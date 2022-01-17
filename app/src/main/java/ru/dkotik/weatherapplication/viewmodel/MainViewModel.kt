@@ -12,16 +12,24 @@ class MainViewModel(private val liveDataToObserve: MutableLiveData<AppState> = M
 
     fun getLiveData() = liveDataToObserve
 
-    fun getWeatherFromLocalStore() = getDataFromLocalSource()
+    fun getWeatherFromLocalSourceRus() = getDataFromLocalSource(true)
 
-    fun getWeatherFromRemoteStore() = getDataFromLocalSource()
+    fun getWeatherFromLocalSourceWorld() = getDataFromLocalSource(false)
 
-    private fun getDataFromLocalSource() {
+    fun getWeatherFromRemoteSource() = getDataFromLocalSource(true)
+
+    private fun getDataFromLocalSource(isRussian: Boolean) {
         liveDataToObserve.value = AppState.Loading
         Thread {
-            sleep(5000)
+            sleep(3000)
             if (generateFakeError()) {
-                liveDataToObserve.postValue(AppState.Success(repositoryImpl.getWeatherFromLocalStorage()))
+                liveDataToObserve.postValue(AppState.Success(
+                    if (isRussian) {
+                        repositoryImpl.getWeatherFromLocalStorageRus()
+                    } else {
+                        repositoryImpl.getWeatherFromLocalStorageWorld()
+                    }
+                ))
             } else {
                 liveDataToObserve.postValue(AppState.Error(RuntimeException("Ошибка подключения к серверу. Попробуйте еще раз")))
             }
@@ -30,6 +38,6 @@ class MainViewModel(private val liveDataToObserve: MutableLiveData<AppState> = M
 
     private fun generateFakeError(): Boolean {
         val randomInt = (0..11).random()
-        return randomInt > 5
+        return randomInt > 1
     }
 }

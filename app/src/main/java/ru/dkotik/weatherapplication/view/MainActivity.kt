@@ -3,6 +3,7 @@ package ru.dkotik.weatherapplication.view
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import ru.dkotik.weatherapplication.R
+import ru.dkotik.weatherapplication.view.main.MainFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -12,7 +13,7 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                     .replace(R.id.container, MainFragment.newInstance())
-                    .commitNow()
+                    .commit()
         }
     }
 }

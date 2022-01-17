@@ -1,4 +1,4 @@
-package ru.dkotik.weatherapplication.view
+package ru.dkotik.weatherapplication.view.details
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -13,17 +13,16 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import ru.dkotik.weatherapplication.R
-import ru.dkotik.weatherapplication.databinding.MainFragmentBinding
+import ru.dkotik.weatherapplication.databinding.FragmentDetailsBinding
 import ru.dkotik.weatherapplication.model.Weather
 import ru.dkotik.weatherapplication.viewmodel.AppState
 import ru.dkotik.weatherapplication.viewmodel.MainViewModel
 
-class MainFragment : Fragment() {
+class DetailsFragment : Fragment() {
 
-    private var _binding: MainFragmentBinding? = null
+    private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: MainViewModel
-    private lateinit var loadingLayout: FrameLayout
     private lateinit var mainView: ConstraintLayout
     private lateinit var city: TextView
     private lateinit var coordinates: TextView
@@ -31,47 +30,34 @@ class MainFragment : Fragment() {
     private lateinit var feelsLike: TextView
 
     companion object {
-        fun newInstance() = MainFragment()
+        const val BUNDLE_EXTRA = "weather"
+        fun newInstance(bundle: Bundle): DetailsFragment {
+            val fragment = DetailsFragment()
+            fragment.arguments = bundle
+            return fragment
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = MainFragmentBinding.inflate(inflater, container, false)
+        _binding = FragmentDetailsBinding.inflate(inflater, container, false)
         val view = binding.root // root == getRoot()
         findsViews()
         return view
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        val observer = Observer<AppState> { state ->
-            renderData(state)
-        }
-        viewModel.getLiveData().observe(viewLifecycleOwner, observer)
-        viewModel.getWeatherFromLocalStore()
-    }
-
-    private fun renderData(state: AppState?) {
-        when (state) {
-            is AppState.Success -> {
-                val weatherData = state.weatherData
-                loadingLayout.isVisible = false
-                setData(weatherData)
-                mainView.isVisible = true
-                Snackbar.make(mainView, "Success", Snackbar.LENGTH_LONG).show()
-            }
-            is AppState.Error -> {
-                Snackbar.make(mainView, "Error", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Reload") {
-                        viewModel.getWeatherFromLocalStore()
-                    }
-                    .show()
-                loadingLayout.isVisible = false
-            }
-            is AppState.Loading -> {
-                loadingLayout.isVisible = true
-                mainView.isVisible = false
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val weather = arguments?.getParcelable<Weather>(BUNDLE_EXTRA)
+        if (weather != null) {
+            val city = weather.city
+            binding.cityName.text = city.city
+            binding.cityCoordinates.text = String.format(
+                getString(R.string.city_coordinates),
+                city.lat.toString(),
+                city.lon.toString()
+            )
+            binding.temperatureValue.text = weather.temperature.toString()
+            binding.feelsLikeValue.text = weather.feelsLike.toString()
         }
     }
 
@@ -88,7 +74,6 @@ class MainFragment : Fragment() {
     }
 
     private fun findsViews() {
-        loadingLayout = binding.loadingLayout
         mainView = binding.mainView
         city = binding.cityName
         coordinates = binding.cityCoordinates
