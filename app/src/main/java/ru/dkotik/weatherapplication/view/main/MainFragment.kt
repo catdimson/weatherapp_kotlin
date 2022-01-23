@@ -12,6 +12,8 @@ import com.google.android.material.snackbar.Snackbar
 import ru.dkotik.weatherapplication.R
 import ru.dkotik.weatherapplication.databinding.FragmentMainBinding
 import ru.dkotik.weatherapplication.model.Weather
+import ru.dkotik.weatherapplication.showSnackBar
+import ru.dkotik.weatherapplication.showSnackBarWithResources
 import ru.dkotik.weatherapplication.view.OnItemViewClickListener
 import ru.dkotik.weatherapplication.view.details.DetailsFragment
 import ru.dkotik.weatherapplication.viewmodel.AppState
@@ -21,21 +23,22 @@ class MainFragment : Fragment() {
 
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by lazy {
+        ViewModelProvider(this).get(MainViewModel::class.java)
+    }
+    private var isDataSetRus: Boolean = true
     private val adapter = MainFragmentAdapter(object : OnItemViewClickListener {
         override fun onItemViewClick(weather: Weather) {
-            val manager = activity?.supportFragmentManager
-            if (manager != null) {
-                val bundle = Bundle()
-                bundle.putParcelable(DetailsFragment.BUNDLE_EXTRA, weather)
-                manager.beginTransaction()
-                    .replace(R.id.container, DetailsFragment.newInstance(bundle))
+            activity?.supportFragmentManager?.apply {
+                beginTransaction()
+                    .replace(R.id.container, DetailsFragment.newInstance(Bundle().apply {
+                        putParcelable(DetailsFragment.BUNDLE_EXTRA, weather)
+                    }))
                     .addToBackStack("")
                     .commit()
             }
         }
     })
-    private var isDataSetRus: Boolean = true
 
     companion object {
         fun newInstance() = MainFragment()
@@ -48,11 +51,14 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.mainFragmentRecyclerView.adapter = adapter
-        binding.mainFragmentFAB.setOnClickListener { changeWeatherDataSet() }
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.getLiveData().observe(viewLifecycleOwner, Observer { renderData(it) })
-        viewModel.getWeatherFromLocalSourceRus()
+        with(binding) {
+            mainFragmentRecyclerView.adapter = adapter
+            mainFragmentFAB.setOnClickListener { changeWeatherDataSet() }
+        }
+        with(viewModel) {
+            getLiveData().observe(viewLifecycleOwner, Observer { renderData(it) })
+            getWeatherFromLocalSourceRus()
+        }
     }
 
     private fun changeWeatherDataSet() {
@@ -60,8 +66,7 @@ class MainFragment : Fragment() {
             viewModel.getWeatherFromLocalSourceWorld()
         } else {
             viewModel.getWeatherFromLocalSourceRus()
-        }
-        isDataSetRus = !isDataSetRus
+        }.also { isDataSetRus = !isDataSetRus }
     }
 
     private fun renderData(appState: AppState) {
@@ -78,16 +83,18 @@ class MainFragment : Fragment() {
             is AppState.Error -> {
                 binding.mainFragmentLoadingLayout.visibility = View.GONE
                 binding.mainFragmentRecyclerView.isVisible = false
-                Snackbar.make(binding.mainFragmentFAB, getString(R.string.error),
-                        Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.reload)) {
-                        viewModel.getWeatherFromLocalSourceRus() }
-                    .show()
+                binding.mainFragmentFAB.showSnackBarWithResources(
+                    fragment = this,
+                    text = R.string.error,
+                    actionText = R.string.reload,
+                    { viewModel.getWeatherFromLocalSourceRus() }
+                )
             }
         }
     }
 
     override fun onDestroy() {
+        _binding = null
         adapter.removeListener()
         super.onDestroy()
     }
