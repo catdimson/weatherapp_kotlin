@@ -4,8 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ru.dkotik.weatherapplication.repository.Repository
 import ru.dkotik.weatherapplication.repository.impl.RepositoryImpl
-import java.lang.RuntimeException
-import java.lang.Thread.sleep
 
 class MainViewModel(private val liveDataToObserve: MutableLiveData<AppState> = MutableLiveData(),
     private val repositoryImpl: Repository = RepositoryImpl()) : ViewModel() {
@@ -21,23 +19,26 @@ class MainViewModel(private val liveDataToObserve: MutableLiveData<AppState> = M
     private fun getDataFromLocalSource(isRussian: Boolean) {
         liveDataToObserve.value = AppState.Loading
         Thread {
-            sleep(3000)
-            if (generateFakeError()) {
-                liveDataToObserve.postValue(AppState.Success(
-                    if (isRussian) {
-                        repositoryImpl.getWeatherFromLocalStorageRus()
-                    } else {
-                        repositoryImpl.getWeatherFromLocalStorageWorld()
+            var repeatLimit = 2
+            var repeatCurrent = 0
+            while (repeatCurrent != repeatLimit) {
+                try {
+                    liveDataToObserve.postValue(AppState.Success(
+                        if (isRussian) {
+                            repositoryImpl.getWeatherFromLocalStorageRus()
+                        } else {
+                            repositoryImpl.getWeatherFromLocalStorageWorld()
+                        }
+                    ))
+                    break
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    repeatCurrent++
+                    if (repeatCurrent == repeatLimit) {
+                        liveDataToObserve.postValue(AppState.Error(RuntimeException("Ошибка подключения к серверу. Попробуйте еще раз")))
                     }
-                ))
-            } else {
-                liveDataToObserve.postValue(AppState.Error(RuntimeException("Ошибка подключения к серверу. Попробуйте еще раз")))
+                }
             }
         }.start()
-    }
-
-    private fun generateFakeError(): Boolean {
-        val randomInt = (0..11).random()
-        return randomInt > 1
     }
 }
