@@ -16,8 +16,14 @@ import ru.dkotik.weatherapplication.showSnackBar
 import ru.dkotik.weatherapplication.showSnackBarWithResources
 import ru.dkotik.weatherapplication.view.OnItemViewClickListener
 import ru.dkotik.weatherapplication.view.details.DetailsFragment
+import ru.dkotik.weatherapplication.view.thread.ChangeConnectivityBroadcastReceiver
 import ru.dkotik.weatherapplication.viewmodel.AppState
 import ru.dkotik.weatherapplication.viewmodel.MainViewModel
+import android.net.ConnectivityManager
+
+import android.content.IntentFilter
+import java.lang.Exception
+
 
 class MainFragment : Fragment() {
 
