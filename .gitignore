@@ -43,3 +43,6 @@ output.json
 #NDK
 obj/
 .externalNativeBuild
+
+# custom
+apikey.properties
