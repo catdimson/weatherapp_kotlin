@@ -2,11 +2,12 @@ package ru.dkotik.weatherapplication.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import ru.dkotik.weatherapplication.model.AppState
 import ru.dkotik.weatherapplication.repository.Repository
 import ru.dkotik.weatherapplication.repository.impl.RepositoryImpl
 
 class MainViewModel(private val liveDataToObserve: MutableLiveData<AppState> = MutableLiveData(),
-    private val repositoryImpl: Repository = RepositoryImpl()) : ViewModel() {
+                    private val repositoryImpl: Repository = RepositoryImpl()) : ViewModel() {
 
     fun getLiveData() = liveDataToObserve
 
@@ -23,7 +24,8 @@ class MainViewModel(private val liveDataToObserve: MutableLiveData<AppState> = M
             var repeatCurrent = 0
             while (repeatCurrent != repeatLimit) {
                 try {
-                    liveDataToObserve.postValue(AppState.Success(
+                    liveDataToObserve.postValue(
+                        AppState.Success(
                         if (isRussian) {
                             repositoryImpl.getWeatherFromLocalStorageRus()
                         } else {
