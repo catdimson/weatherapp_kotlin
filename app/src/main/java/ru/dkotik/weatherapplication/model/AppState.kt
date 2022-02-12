@@ -1,6 +1,4 @@
-package ru.dkotik.weatherapplication.viewmodel
-
-import ru.dkotik.weatherapplication.model.Weather
+package ru.dkotik.weatherapplication.model
 
 sealed class AppState {
 
