@@ -3,7 +3,6 @@ package ru.dkotik.weatherapplication.repository
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Callback
 import retrofit2.Retrofit
@@ -11,8 +10,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import ru.dkotik.weatherapplication.BuildConfig
 import ru.dkotik.weatherapplication.model.WeatherDTO
 import java.io.IOException
-
-private const val REQUEST_API_KEY = "X-Yandex-API-Key"
 
 class RemoteDataSource {
 
@@ -27,7 +24,7 @@ class RemoteDataSource {
         .build().create(WeatherAPI::class.java)
 
     fun getWeatherDetails(lat: Double, lon: Double, callback: Callback<WeatherDTO>) {
-        weatherApi.getWeather(BuildConfig.WEATHER_API_KEY, lat, lon).enqueue(callback)
+        weatherApi.getWeather(BuildConfig.WEATHER_API_KEY, lat, lon, "ru_RU").enqueue(callback)
     }
 
     private fun createOkHttpClient(interceptor: Interceptor): OkHttpClient {
