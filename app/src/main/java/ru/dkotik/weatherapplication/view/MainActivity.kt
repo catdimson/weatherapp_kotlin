@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import ru.dkotik.weatherapplication.R
 import ru.dkotik.weatherapplication.databinding.MainActivityBinding
+import ru.dkotik.weatherapplication.experiment.ContentProviderFragment
 import ru.dkotik.weatherapplication.view.history.HistoryFragment
 import ru.dkotik.weatherapplication.view.main.MainFragment
 
@@ -43,6 +44,10 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.menu_history -> {
                 showFragment(HistoryFragment.newInstance())
+                true
+            }
+            R.id.menu_contacts -> {
+                showFragment(ContentProviderFragment.newInstance())
                 true
             }
             else -> super.onOptionsItemSelected(item)
