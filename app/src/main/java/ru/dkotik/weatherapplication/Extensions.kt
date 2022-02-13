@@ -4,6 +4,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 
+@Deprecated(message = "Старый метод. Не используем")
 fun View.showSnackBar(
     text: String,
     actionText: String,

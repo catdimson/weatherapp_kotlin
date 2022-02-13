@@ -18,6 +18,8 @@ import ru.dkotik.weatherapplication.databinding.FragmentDetailsBinding
 import ru.dkotik.weatherapplication.model.Weather
 import ru.dkotik.weatherapplication.utils.showSnackBar
 import ru.dkotik.weatherapplication.model.AppState
+import ru.dkotik.weatherapplication.model.City
+import ru.dkotik.weatherapplication.utils.changeConditionEngToRus
 import ru.dkotik.weatherapplication.viewmodel.DetailsViewModel
 
 const val DETAILS_INTENT_FILTER = "DETAILS INTENT FILTER"
@@ -32,11 +34,6 @@ const val DETAILS_RESPONSE_SUCCESS_EXTRA = "RESPONSE SUCCESS"
 const val DETAILS_TEMP_EXTRA = "TEMPERATURE"
 const val DETAILS_FEELS_LIKE_EXTRA = "FEELS LIKE"
 const val DETAILS_CONDITION_EXTRA = "CONDITION"
-private const val TEMP_INVALID = -100
-private const val FEELS_LIKE_INVALID = -100
-private const val PROCESS_ERROR = "Обработка ошибки"
-private const val REQUEST_API_KEY = "X-Yandex-API-Key"
-private const val MAIN_LINK = "https://api.weather.yandex.ru/v2/forecast/?"
 
 class DetailsFragment : Fragment() {
 
@@ -55,10 +52,6 @@ class DetailsFragment : Fragment() {
         fun newInstance(bundle: Bundle) = DetailsFragment().also { fragment -> fragment.arguments = bundle }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -70,20 +63,34 @@ class DetailsFragment : Fragment() {
         return view
     }
 
+    private fun saveHistory(
+        city: City,
+        weather: Weather
+    ) {
+        viewModel.saveCityToDB(
+            Weather(
+                city,
+                weather.temperature,
+                weather.feelsLike,
+                changeConditionEngToRus(weather.condition)
+            )
+        )
+    }
+
     private fun renderData(appState: AppState) {
         when (appState) {
             is AppState.Success -> {
                 binding.mainView.visibility = View.VISIBLE
-                binding.loadingLayout.visibility = View.GONE
+                binding.includedLoadingLayout.loadingLayout.visibility = View.GONE
                 setWeather(appState.weatherData[0])
             }
             is AppState.Loading -> {
                 binding.mainView.visibility = View.GONE
-                binding.loadingLayout.visibility = View.VISIBLE
+                binding.includedLoadingLayout.loadingLayout.visibility = View.VISIBLE
             }
             is AppState.Error -> {
                 binding.mainView.visibility = View.VISIBLE
-                binding.loadingLayout.visibility = View.GONE
+                binding.includedLoadingLayout.loadingLayout.visibility = View.GONE
                 binding.mainView.showSnackBar(
                     getString(R.string.error),
                     getString(R.string.reload),
@@ -95,6 +102,7 @@ class DetailsFragment : Fragment() {
 
     private fun setWeather(weather: Weather) {
         val city = weatherBundle.city
+        saveHistory(weatherBundle.city, weather)
         binding.cityName.text = city.city
         binding.cityCoordinates.text = String.format(
             getString(R.string.city_coordinates),
@@ -103,7 +111,7 @@ class DetailsFragment : Fragment() {
         )
         binding.temperatureValue.text = weather.temperature.toString()
         binding.feelsLikeValue.text = weather.feelsLike.toString()
-        binding.weatherCondition.text = weather.condition
+        binding.weatherCondition.text = changeConditionEngToRus(weather.condition)
 
         Glide.with(requireContext())
             .load("https://freepngimg.com/thumb/city/36275-3-city-hd.png")
@@ -116,14 +124,14 @@ class DetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         weatherBundle = arguments?.getParcelable<Weather>(BUNDLE_EXTRA) ?: Weather()
         binding.mainView.visibility = View.GONE
-        binding.loadingLayout.visibility = View.VISIBLE
+        binding.includedLoadingLayout.loadingLayout.visibility = View.VISIBLE
         viewModel.detailsLiveData.observe(viewLifecycleOwner, Observer { renderData(it) })
         getWeather()
     }
 
     private fun getWeather() {
         binding.mainView.visibility = View.GONE
-        binding.loadingLayout.visibility = View.VISIBLE
+        binding.includedLoadingLayout.loadingLayout.visibility = View.VISIBLE
         viewModel.getWeatherFromRemoteSource(weatherBundle.city.lat, weatherBundle.city.lon)
     }
 
