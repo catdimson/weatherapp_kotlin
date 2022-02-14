@@ -8,16 +8,15 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.snackbar.Snackbar
 import ru.dkotik.weatherapplication.R
 import ru.dkotik.weatherapplication.databinding.FragmentMainBinding
 import ru.dkotik.weatherapplication.model.Weather
-import ru.dkotik.weatherapplication.showSnackBar
 import ru.dkotik.weatherapplication.showSnackBarWithResources
 import ru.dkotik.weatherapplication.view.OnItemViewClickListener
 import ru.dkotik.weatherapplication.view.details.DetailsFragment
 import ru.dkotik.weatherapplication.viewmodel.AppState
 import ru.dkotik.weatherapplication.viewmodel.MainViewModel
+
 
 class MainFragment : Fragment() {
 
