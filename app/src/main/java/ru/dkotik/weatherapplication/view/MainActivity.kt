@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import ru.dkotik.weatherapplication.maps.MapsFragment
 import ru.dkotik.weatherapplication.R
 import ru.dkotik.weatherapplication.databinding.MainActivityBinding
 import ru.dkotik.weatherapplication.experiment.ContentProviderFragment
@@ -48,6 +49,10 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.menu_contacts -> {
                 showFragment(ContentProviderFragment.newInstance())
+                true
+            }
+            R.id.menu_google_maps -> {
+                showFragment(MapsFragment())
                 true
             }
             else -> super.onOptionsItemSelected(item)
