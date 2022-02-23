@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1066887651862",
+    "project_id": "weatherproject-9833d",
+    "storage_bucket": "weatherproject-9833d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1066887651862:android:4cb65887aa56634bafcb37",
+        "android_client_info": {
+          "package_name": "ru.dkotik.weatherapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1066887651862-ninslvv77uisfej026a19vt9f9e95fva.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApVTOchJ8NH_zJG5k-VsldJ7vik1Fm8xY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1066887651862-ninslvv77uisfej026a19vt9f9e95fva.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

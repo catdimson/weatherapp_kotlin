@@ -26,7 +26,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WeatherApplication"
         tools:ignore="ExtraText">
+        <service
+            android:name=".experiment.MessageService"
+            android:enabled="true"
+            android:exported="true">
 
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+
+        </service>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
