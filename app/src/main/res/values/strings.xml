@@ -46,4 +46,7 @@
     <string name="default_address">Red Square, 1, Moscow</string>
     <string name="button_search_map">Search</string>
     <string name="marker_start">Start</string>
+
+    <string name="channel_name">Channel name</string>
+    <string name="channel_description">Channel description</string>
 </resources>
